@@ -52,7 +52,7 @@ export class AppHeader extends LitElement {
         <nav>
           <a href="./">Главная</a>
           <a href="./wallet">Кошелёк</a>
-          <a href="./award">Наградить</a>
+          <a href="./award?user=id&link=https://viz.cx/">Наградить</a>
           <a href="./about">О сайте</a>
         </nav>
       </header>
