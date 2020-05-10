@@ -12,39 +12,61 @@ export class AppAward extends LitElement {
 
     constructor() {
         super();
-        viz.config.set('websocket', 'https://node.viz.plus/');
-        
+    }
+
+    firstUpdated() {
+        this.shadowRoot?.querySelector('#viz')?.value = this.shadowRoot?.querySelector('#energy')?.value;
     }
 
     render() {
         return html`
-            <div>
-                <h2>Link: ${this._getLink()}</h2>
-                <h2>User: ${this._getUser()}</h2>
-                <h2>Changeable: ${this._getChangable()}</h2>
-                Accounts: ${this._getAccounts()}
-            </div>
+            <p>
+                <label>
+                    <span>Получатель:</span>
+                    <input type="text" name="awardee" value="${this._getAwardee()}" />
+                </label>
+            </p>
+            <p>
+                <label>
+                    <span>Энергия:</span>
+                    <input id="energy" name="energy" type="range" min="1" max="${this._getEnergy()}" step="1" value="${this._getEnergy() / 10}" @change=${this.updateEnergy} />
+                    <input id="viz" value=""></span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <span>Пояснение:</span>
+                    <input type="text" name="memo" value="${this._getMemo()}"  />
+                </label>
+            </p>
+            <p>
+                <input type="button" value="Наградить" @click="${this.sendAward}" />
+            </p>
         `;
     }
 
-    _getLink(): string {
+    updateEnergy(elem: any) {
+        this.shadowRoot?.querySelector('#viz')?.value = elem.srcElement.value;
+    }
+
+    sendAward(): void {
+        alert(123);
+    }
+
+    _getEnergy(): number {
+        return 5450 / 100;
+    }
+
+    _getMemo(): string {
         return new URLSearchParams(location.search).get('link') || '';
     }
 
-    _getUser(): string {
+    _getAwardee(): string {
         return new URLSearchParams(location.search).get('user') || '';
     }
 
     _getChangable(): boolean {
         let changeable = (new URLSearchParams(location.search).get('changeable') || '') == 'true';
-        return changeable || this._getLink().length == 0 || this._getUser().length == 0;
+        return changeable || this._getMemo().length == 0 || this._getAwardee().length == 0;
     }
-
-    _getAccounts(): string {
-        viz.api.getAccounts(['id'], function(err: any, result: any) {
-            console.log(err, result);
-        });
-        return "accounts";
-    }
-
 }

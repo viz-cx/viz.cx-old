@@ -6,6 +6,7 @@ import { Router } from '@vaadin/router';
 
 import '../components/header';
 
+declare var viz: any;
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
@@ -20,6 +21,7 @@ export class AppIndex extends LitElement {
 
   constructor() {
     super();
+    viz.config.set('websocket', 'https://node.viz.plus/');
   }
 
   firstUpdated() {
