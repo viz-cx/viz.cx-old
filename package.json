@@ -1,7 +1,7 @@
 {
-  "name": "pwa-starter",
+  "name": "viz.cx",
   "version": "0.0.1",
-  "description": "A starter kit for building PWAs!",
+  "description": "Progressive Web App for interacting with VIZ blockchain",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,7 +11,7 @@
     "start": "concurrently \"tsc --watch\" \"es-dev-server --app-index index.html --compatibility none --node-resolve --watch --open\"",
     "dev": "concurrently \"tsc --watch\" \"es-dev-server --app-index index.html --compatibility none --node-resolve --watch --open\""
   },
-  "author": "",
+  "author": "chiliec",
   "license": "ISC",
   "dependencies": {
     "@pwabuilder/pwainstall": "^1.6.2",
