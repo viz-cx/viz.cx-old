@@ -1,19 +1,24 @@
 import { LitElement, css, html, customElement } from 'lit-element';
+import { StorageHelper } from '../components/storage';
 
 declare let viz: any;
 
 @customElement('app-award')
 export class AppAward extends LitElement {
 
-    private defaultDivider = 20;
+    private storage: StorageHelper.LocalStorageWorker;
+
+    private defaultEnergyDivider: number;
 
     static get styles() {
         return css`
         `;
     }
 
-    constructor() {
+    constructor(defaultEnergyDivider = 20, storage = new StorageHelper.LocalStorageWorker()) {
         super();
+        this.defaultEnergyDivider = defaultEnergyDivider;
+        this.storage = storage;
     }
 
     firstUpdated() {
@@ -25,7 +30,7 @@ export class AppAward extends LitElement {
                 maxAttr.value = value.toString();
                 energyInput.attributes.setNamedItem(maxAttr);
                 let valueAttr = document.createAttribute('value');
-                valueAttr.value = (value / this.defaultDivider).toString();
+                valueAttr.value = (value / this.defaultEnergyDivider).toString();
                 energyInput.attributes.setNamedItem(valueAttr);
                 if (vizContainer) {
                     vizContainer.innerHTML = energyInput.value + '%';
@@ -89,8 +94,12 @@ export class AppAward extends LitElement {
     }
 
     private sendAward(): void {
-        let initiator: string, wif: string; // TODO: Get from storage
-
+        let initiator = this.storage.get('user');
+        let wif = this.storage.get('posting_key');
+        if (!initiator || !wif) {
+            console.log('Not authorized for send award');
+            return;
+        }
         let receiverInput = this.shadowRoot?.querySelector('input#receiver') as HTMLInputElement;
         if (!receiverInput || receiverInput.value.trim().length === 0) {
             console.log('Receiver is not valid');
@@ -121,7 +130,11 @@ export class AppAward extends LitElement {
     }
 
     private async getEnergy(): Promise<number> {
-        let accounts: string[] = [];
+        let user = this.storage.get('user');
+        if (!user) {
+            return Promise.reject('Not authorized');
+        }
+        let accounts: string[] = [user];
         return new Promise(resolve => {
             viz.api.getAccounts(accounts, function (err: any, result: any) {
                 var minEnergy = 10000;
