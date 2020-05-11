@@ -111,7 +111,7 @@ export class AppAward extends LitElement {
             return;
         }
         let memo = memoInput.value.trim();
-        
+
         let custom_sequence = 0;
         let beneficiaries: string[] = [];
 
@@ -123,17 +123,19 @@ export class AppAward extends LitElement {
     private async getEnergy(): Promise<number> {
         let accounts: string[] = [];
         return new Promise(resolve => {
-            viz.api.getAccounts(accounts, function(err: any, result: any) {
+            viz.api.getAccounts(accounts, function (err: any, result: any) {
                 var minEnergy = 10000;
                 if (!err && result) {
                     for (var account of result) {
-                        let energy: number = account['energy'];
-                        if (energy && energy < minEnergy) {
-                            minEnergy = energy;
+                        let lastVoteTime = Date.parse(account.last_vote_time);
+                        let deltaTime = (new Date().getTime() - lastVoteTime + (new Date().getTimezoneOffset() * 60000)) / 1000;
+                        let energy = account.energy;
+                        let regenerationTime = 24 * 5 * 60 * 60;
+                        let calculatedEnergy = parseInt(energy + (deltaTime * 10000 / regenerationTime));
+                        if (minEnergy > calculatedEnergy) {
+                            minEnergy = calculatedEnergy;
                         }
                     }
-                } else {
-                    minEnergy = 0;
                 }
                 resolve(minEnergy / 100);
             });
