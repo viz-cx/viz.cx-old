@@ -1,5 +1,5 @@
 import { LitElement, css, html, customElement } from 'lit-element';
-import { StorageHelper } from '../components/storage';
+import { StorageHelper } from '../utils/storage';
 
 declare let viz: any;
 
