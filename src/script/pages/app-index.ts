@@ -49,7 +49,13 @@ export class AppIndex extends LitElement {
         action: async() => {
           await import('./app-award.js');
         },
-      }
+      },
+      {
+        path: '(.*)', 
+        component: 'app-not-found',
+        action: async() => {
+          await import('./app-not-found.js');
+        },
     ]);
   }
 
