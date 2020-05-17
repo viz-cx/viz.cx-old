@@ -1,10 +1,9 @@
 import { LitElement, css, html, customElement } from 'lit-element';
 
-import './app-home';
-
 import { Router } from '@vaadin/router';
 
 import '../components/header';
+import { routes } from '../components/routes';
 
 declare var viz: any;
 
@@ -27,36 +26,7 @@ export class AppIndex extends LitElement {
   firstUpdated() {
     // For more info on using the @vaadin/router check here https://vaadin.com/router
     const router = new Router(this.shadowRoot?.querySelector('#routerOutlet'));
-    router.setRoutes([
-      { path: '/', component: 'app-home' },
-      {
-        path: "/about",
-        component: "app-about",
-        action: async() => {
-          await import('./app-about.js');
-        },
-      },
-      {
-        path: "/wallet",
-        component: "app-wallet",
-        action: async() => {
-          await import('./app-wallet.js');
-        },
-      },
-      {
-        path: "/award",
-        component: "app-award",
-        action: async() => {
-          await import('./app-award.js');
-        },
-      },
-      {
-        path: '(.*)', 
-        component: 'app-not-found',
-        action: async() => {
-          await import('./app-not-found.js');
-        },
-    ]);
+    router.setRoutes(routes);
   }
 
   render() {
