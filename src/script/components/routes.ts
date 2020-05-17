@@ -27,6 +27,20 @@ export var routes = [
     },
 },
 {
+    path: "/login",
+    component: "app-login",
+    action: async () => {
+        await import('../pages/app-login.js');
+    },
+},
+{
+    path: "/logout",
+    component: "app-logout",
+    action: async () => {
+        await import('../pages/app-logout.js');
+    },
+},
+{
     path: '(.*)',
     component: 'app-not-found',
     action: async () => {

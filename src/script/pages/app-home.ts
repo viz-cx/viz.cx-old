@@ -53,9 +53,9 @@ export class AppHome extends LitElement {
   share() {
     if ((navigator as any).share) {
       (navigator as any).share({
-        title: 'PWABuilder pwa-starter',
-        text: 'Check out the PWABuilder pwa-starter!',
-        url: 'https://github.com/pwa-builder/pwa-starter',
+        title: 'VIZ.cx',
+        text: 'Check out VIZ.cx!',
+        url: 'https://github.com/viz-cx/viz.cx',
       })
     }
   }
@@ -63,22 +63,17 @@ export class AppHome extends LitElement {
   render() {
     return html`
       <div>
-
         <div id="welcomeBlock">
 
           <img src="assets/icons/icon_512.png" alt="app icon">
-          <h2>Welcome!</h2>
+          <h2>Welcome to VIZ.cx</h2>
 
-          <p>
-            Welcome to the lit-element edition of the <a href="https://pwabuilder.com">PWABuilder</a> pwa-starter!
+          <p>Welcome to another one site for VIZ blockchain!</p>
 
-            Be sure to head back to <a href="https://pwabuilder.com">PWABuilder</a> when you are ready to ship this PWA to the Microsoft, Google Play and Samsung Galaxy stores!
-          </p>
-
-          ${'share' in navigator ? html`<button @click="${this.share}">Share this Starter!</button>` : null}
+          ${'share' in navigator ? html`<button @click="${this.share}">Share this site!</button>` : null}
         </div>
 
-        <pwa-install>Install PWA Starter</pwa-install>
+        <pwa-install>Install VIZ.cx</pwa-install>
       </div>
     `;
   }

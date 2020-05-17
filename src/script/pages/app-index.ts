@@ -5,7 +5,7 @@ import { Router } from '@vaadin/router';
 import '../components/header';
 import { routes } from '../components/routes';
 
-declare var viz: any;
+declare let viz: any;
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
@@ -20,6 +20,7 @@ export class AppIndex extends LitElement {
 
   constructor() {
     super();
+    // TODO: сделать переключение между нодами при недоступности
     viz.config.set('websocket', 'https://node.viz.plus/');
   }
 
@@ -33,7 +34,6 @@ export class AppIndex extends LitElement {
     return html`
       <div>
         <app-header></app-header>
-
         <main>
           <div id="routerOutlet"></div>
         </main>

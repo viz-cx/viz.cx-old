@@ -27,7 +27,7 @@ export class AppHeader extends LitElement {
       }
 
       nav {
-        width: 22em;
+        width: 12em;
         display: flex;
         justify-content: space-between;
       }
@@ -50,10 +50,10 @@ export class AppHeader extends LitElement {
         <h1>${this.title}</h1>
 
         <nav>
-          <a href="./">Главная</a>
-          <a href="./wallet">Кошелёк</a>
-          <a href="./award?user=id&memo=link:https://viz.cx/">Наградить</a>
-          <a href="./about">О сайте</a>
+          <a href="./">Home</a>
+          <!-- <a href="./wallet">Wallet</a> -->
+          <a href="./award">Award</a>
+          <a href="./login">Login</a>
         </nav>
       </header>
     `;

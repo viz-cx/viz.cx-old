@@ -1,24 +1,62 @@
 import { LitElement, css, html, customElement } from 'lit-element';
-import { StorageHelper } from '../utils/storage';
+import { UserStorage } from '../utils/userStorage';
+import { Router } from '@vaadin/router';
 
 declare let viz: any;
 
 @customElement('app-award')
 export class AppAward extends LitElement {
 
-    private storage: StorageHelper.LocalStorageWorker;
+    private userStorage: UserStorage;
 
     private defaultEnergyDivider: number;
 
     static get styles() {
         return css`
+          input {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+          }
+          
+          button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+          }
+          
+          button:hover {
+            opacity: 0.8;
+          }
         `;
     }
 
-    constructor(defaultEnergyDivider = 20, storage = new StorageHelper.LocalStorageWorker()) {
+    constructor(defaultEnergyDivider = 20, userStorage = new UserStorage()) {
         super();
         this.defaultEnergyDivider = defaultEnergyDivider;
-        this.storage = storage;
+        this.userStorage = userStorage;
+
+        if (!userStorage.getCurrentUser()) {
+            Router.go('/login' + '?redirect=/award');
+        }
+
+        this.updateComplete.then(() => {
+            this.shadowRoot?.querySelectorAll('input').forEach(input => {
+                input.addEventListener('keypress', (event) => {
+                    if (event.keyCode == 13) {
+                        event.preventDefault();
+                        this.sendAward();
+                    }
+                });
+            })
+        });
     }
 
     firstUpdated() {
@@ -62,26 +100,23 @@ export class AppAward extends LitElement {
     render() {
         return html`
             <p>
-                <label>
-                    <span>Получатель:</span>
-                    <input id="receiver" name="receiver" type="text" value="${this.getReceiver()}" />
-                </label>
+                <label for="receiver">Receiver:</label>
+                <input id="receiver" name="receiver" type="text" value="${this.getReceiver()}" />
             </p>
             <p>
-                <label>
-                    <span>Энергия:</span>
-                    <input id="energy" name="energy" type="range" min="0.01" step="0.01" @change=${this.updateEnergy} @input=${this.updateEnergy} />
-                    <span id="viz"></span>
-                </label>
+                <label for="energy">Energy:</span>
+                <input id="energy" name="energy" type="range" min="0.01" step="0.01" @change=${this.updateEnergy} @input=${this.updateEnergy} />
+                <span id="viz"></span>
             </p>
             <p>
-                <label>
-                    <span>Пояснение:</span>
-                    <input id="memo" name="memo" type="text" value="${this.getMemo()}"  />
-                </label>
+                <label for="memo">Memo:</label>
+                <input id="memo" name="memo" type="text" value="${this.getMemo()}" />
             </p>
             <p>
-                <input type="button" value="Наградить" @click="${this.sendAward}" />
+                <button type="submit" @click="${this.sendAward}">Award</button>
+            </p>
+            <p>
+                <span id="result"></span>
             </p>
         `;
     }
@@ -94,29 +129,30 @@ export class AppAward extends LitElement {
     }
 
     private sendAward(): void {
-        let initiator = this.storage.get('user');
-        let wif = this.storage.get('posting_key');
+        let currentUser = this.userStorage.getCurrentUser();
+        let initiator = currentUser?.username;
+        let wif = currentUser?.wif;
         if (!initiator || !wif) {
-            console.log('Not authorized for send award');
+            this.showResult('Not authorized for send award', false);
             return;
         }
         let receiverInput = this.shadowRoot?.querySelector('input#receiver') as HTMLInputElement;
         if (!receiverInput || receiverInput.value.trim().length === 0) {
-            console.log('Receiver is not valid');
+            this.showResult('Receiver is not valid', false);
             return;
         }
         let receiver = receiverInput.value.trim();
 
         let energyInput = this.shadowRoot?.querySelector('input#energy') as HTMLInputElement;
         if (!energyInput || energyInput.value.trim().length === 0) {
-            console.log('Energy is not valid');
+            this.showResult('Energy is not valid', false);
             return;
         }
-        let energy = Number(energyInput.value.trim()) * 100;
+        let energy = parseInt((parseFloat(energyInput.value.trim()) * 100).toString());
 
         let memoInput = this.shadowRoot?.querySelector('input#memo') as HTMLInputElement;
-        if (!memoInput || memoInput.value.trim().length === 0) {
-            console.log('Memo is not valid');
+        if (!memoInput) {
+            this.showResult('Memo is not valid', false);
             return;
         }
         let memo = memoInput.value.trim();
@@ -124,17 +160,43 @@ export class AppAward extends LitElement {
         let custom_sequence = 0;
         let beneficiaries: string[] = [];
 
-        viz.broadcast.award(wif, initiator, receiver, energy, custom_sequence, memo, beneficiaries, function (err: any, result: any) {
-            console.log(err, result)
+        viz.broadcast.award(wif, initiator, receiver, energy, custom_sequence, memo, beneficiaries, (err: any, result: any) => {
+            console.log(err, result);
+            if (err) {
+                this.showResult(err, false);
+            } else {
+                let obj = result['operations'][0][1];
+                let initiator = obj['initiator'];
+                let receiver = obj['receiver'];
+                let memo = obj['memo'];
+                let energy = (parseFloat(obj['energy']) / 100).toFixed(2);
+                this.showResult(`
+                Награждение <a href="https://info.viz.plus/accounts/${receiver}/">${receiver}</a>
+                 энергией ${energy}%
+                 от аккаунта <a href="https://info.viz.plus/accounts/${initiator}/">${initiator}</a>
+                 с заметкой "${memo}"
+                 прошло успешно!`);
+            }
         });
     }
 
+    private showResult(text: string, success = true) {
+        let resultContainer = this.shadowRoot?.querySelector('span#result') as HTMLElement;
+        if (resultContainer) {
+            if (success) {
+                resultContainer.innerHTML = `<div>${text}</div>`;
+            } else {
+                resultContainer.innerHTML = `<div style="color: red">${text}</div>`;
+            }
+        }
+    }
+
     private async getEnergy(): Promise<number> {
-        let user = this.storage.get('user');
+        let user = this.userStorage.getCurrentUser();
         if (!user) {
             return Promise.reject('Not authorized');
         }
-        let accounts: string[] = [user];
+        let accounts: string[] = [user.username];
         return new Promise(resolve => {
             viz.api.getAccounts(accounts, function (err: any, result: any) {
                 var minEnergy = 10000;
