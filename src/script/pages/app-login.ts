@@ -73,9 +73,8 @@ export class AppLogin extends LitElement {
   }
 
   private login() {
-    let username = (this.shadowRoot?.querySelector('input#username') as HTMLInputElement).value.trim();
+    let username = (this.shadowRoot?.querySelector('input#username') as HTMLInputElement).value.trim().toLowerCase();
     let wif = (this.shadowRoot?.querySelector('input#wif') as HTMLInputElement).value.trim();
-    console.log(username, wif);
     this.userStorage.auth(username, wif)
       .then(_ => {
         // TODO: взять параметры для редиректа из урла

@@ -141,7 +141,7 @@ export class AppAward extends LitElement {
             this.showResult('Receiver is not valid', false);
             return;
         }
-        let receiver = receiverInput.value.trim();
+        let receiver = receiverInput.value.trim().toLowerCase();
 
         let energyInput = this.shadowRoot?.querySelector('input#energy') as HTMLInputElement;
         if (!energyInput || energyInput.value.trim().length === 0) {
