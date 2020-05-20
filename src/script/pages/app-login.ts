@@ -1,5 +1,5 @@
 import { LitElement, css, html, customElement } from 'lit-element';
-import { UserStorage } from '../utils/userStorage';
+import { UserService } from '../utils/userService';
 import { Router } from '@vaadin/router';
 
 
@@ -38,11 +38,11 @@ export class AppLogin extends LitElement {
     `;
   }
 
-  private userStorage: UserStorage;
+  private userService: UserService;
 
-  constructor(userStorage: UserStorage = new UserStorage()) {
+  constructor(userService: UserService = new UserService()) {
     super();
-    this.userStorage = userStorage;
+    this.userService = userService;
 
     this.updateComplete.then(() => {
       this.shadowRoot?.querySelectorAll('input').forEach(input => {
@@ -75,7 +75,7 @@ export class AppLogin extends LitElement {
   private login() {
     let username = (this.shadowRoot?.querySelector('input#username') as HTMLInputElement).value.trim().toLowerCase();
     let wif = (this.shadowRoot?.querySelector('input#wif') as HTMLInputElement).value.trim();
-    this.userStorage.auth(username, wif)
+    this.userService.auth(username, wif)
       .then(_ => {
         // TODO: взять параметры для редиректа из урла
         Router.go('/award');

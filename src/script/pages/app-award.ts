@@ -1,5 +1,5 @@
 import { LitElement, css, html, customElement } from 'lit-element';
-import { UserStorage } from '../utils/userStorage';
+import { UserService } from '../utils/userService';
 import { Router } from '@vaadin/router';
 
 declare let viz: any;
@@ -7,7 +7,7 @@ declare let viz: any;
 @customElement('app-award')
 export class AppAward extends LitElement {
 
-    private userStorage: UserStorage;
+    private userService: UserService;
 
     private defaultEnergyDivider: number;
 
@@ -38,12 +38,12 @@ export class AppAward extends LitElement {
         `;
     }
 
-    constructor(defaultEnergyDivider = 20, userStorage = new UserStorage()) {
+    constructor(defaultEnergyDivider = 20, userService = new UserService()) {
         super();
         this.defaultEnergyDivider = defaultEnergyDivider;
-        this.userStorage = userStorage;
+        this.userService = userService;
 
-        if (!userStorage.getCurrentUser()) {
+        if (!userService.getCurrentUser()) {
             Router.go('/login' + '?redirect=/award');
         }
 
@@ -129,7 +129,7 @@ export class AppAward extends LitElement {
     }
 
     private sendAward(): void {
-        let currentUser = this.userStorage.getCurrentUser();
+        let currentUser = this.userService.getCurrentUser();
         let initiator = currentUser?.username;
         let wif = currentUser?.wif;
         if (!initiator || !wif) {
@@ -192,7 +192,7 @@ export class AppAward extends LitElement {
     }
 
     private async getEnergy(): Promise<number> {
-        let user = this.userStorage.getCurrentUser();
+        let user = this.userService.getCurrentUser();
         if (!user) {
             return Promise.reject('Not authorized');
         }

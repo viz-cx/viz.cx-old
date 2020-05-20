@@ -12,7 +12,7 @@ export class VizUser {
     }
 }
 
-export class UserStorage {
+export class UserService {
 
     private storage: LocalStorage;
     private userKey = 'viz.username';

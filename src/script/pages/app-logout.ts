@@ -1,5 +1,5 @@
 import { LitElement, css, html, customElement } from 'lit-element';
-import { UserStorage } from '../utils/userStorage';
+import { UserService } from '../utils/userService';
 import { Router } from '@vaadin/router';
 
 
@@ -11,9 +11,9 @@ export class AppLogout extends LitElement {
     `;
   }
 
-  constructor(userStorage = new UserStorage()) {
+  constructor(userService = new UserService()) {
     super();
-    userStorage.forgetUser();
+    userService.forgetUser();
     Router.go('/login');
   }
 
