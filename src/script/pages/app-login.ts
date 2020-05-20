@@ -1,5 +1,5 @@
-import { LitElement, css, html, customElement } from 'lit-element';
-import { UserService } from '../utils/userService';
+import { LitElement, css, html, customElement, property } from 'lit-element';
+import { UserService, VizUser } from '../utils/userService';
 import { Router } from '@vaadin/router';
 
 
@@ -40,9 +40,13 @@ export class AppLogin extends LitElement {
 
   private userService: UserService;
 
+  @property({ type : VizUser })
+  private user: VizUser | null;
+
   constructor(userService: UserService = new UserService()) {
     super();
     this.userService = userService;
+    this.user = this.userService.getCurrentUser();
 
     this.updateComplete.then(() => {
       this.shadowRoot?.querySelectorAll('input').forEach(input => {
@@ -56,7 +60,21 @@ export class AppLogin extends LitElement {
     });
   }
 
+  private logout(event: any) {
+    event.preventDefault();
+    this.userService.forgetUser();
+    this.user = null;
+  }
+
   render() {
+    if (this.user) {
+      return html`
+        <div>
+          You're already logged in as <a href="https://info.viz.plus/accounts/${this.user.username}/">${this.user.username}</a>. 
+          Want to <a href="/login" @click="${this.logout}">log out</a>?
+        </div>
+      `;
+    }
     return html`
       <div>
           <label for="username"><b>Username</b></label>
