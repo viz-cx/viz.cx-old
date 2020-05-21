@@ -34,13 +34,6 @@ export var routes = [
     },
 },
 {
-    path: "/logout",
-    component: "app-logout",
-    action: async () => {
-        await import('../pages/app-logout.js');
-    },
-},
-{
     path: '(.*)',
     component: 'app-not-found',
     action: async () => {
