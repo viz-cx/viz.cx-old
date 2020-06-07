@@ -1,10 +1,10 @@
 {
-  "name": "PWA Starter",
+  "name": "VIZ.cx",
   "display": "standalone",
   "start_url": "/",
-  "short_name": "starter",
+  "short_name": "VIZ",
   "theme_color": "#686bd2",
-  "description": "This is a PWA Starter app",
+  "description": "App for interaction with VIZ blockchain",
   "orientation": "any",
   "background_color": "#686bd2",
   "related_applications": [],
@@ -39,8 +39,10 @@
     }
   ],
   "features": [
-    "Cross Platform",
-    "fast",
-    "simple"
+    "VIZ",
+    "blockchain",
+    "cryptocurrency",
+    "wallet",
+    "awards"
   ]
 }
